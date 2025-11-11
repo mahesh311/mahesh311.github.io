@@ -7,7 +7,7 @@
   <meta name="description" content="Android Team Lead • Jetpack Compose • Kotlin • Clean Architecture — Portfolio" />
   <style>
     :root{
-      --bg:#0f1724; /* dark navy */
+      --bg:#0f1724;
       --card:#0b1220;
       --muted:#9aa4b2;
       --accent:#6ee7b7;
@@ -72,11 +72,27 @@
     .mobile-nav a{display:block;padding:8px 10px;border-radius:8px;color:var(--muted);font-size:14px}
     .mobile-nav a:hover{color:var(--accent);background:rgba(110,231,183,0.03)}
 
-    /* grid layout */
-    .layout{display:grid;grid-template-columns:1fr 360px;gap:var(--gap);align-items:start}
+    /* layout using CSS grid so we can control placement on desktop while preserving DOM order for mobile */
+    .layout{
+      display:grid;
+      grid-template-columns:1fr 360px;
+      gap:var(--gap);
+      align-items:start;
+      grid-auto-rows: auto;
+    }
+
+    /* Desktop placement: place certain cards into right column */
+    /* By default DOM order is mobile-friendly; on desktop we move these to column 2 */
+    /* Assign selectors below to place them in the sidebar column on wide screens */
+    #skills-card { grid-column: 2; }
+    #highlights-card { grid-column: 2; }
+    #contact-card { grid-column: 2; }
+
     @media (max-width:1100px){
       .container{padding:18px}
     }
+
+    /* small screens: collapse to single column — DOM order will be used */
     @media (max-width:980px){
       .layout{grid-template-columns:1fr;gap:18px}
       .avatar{width:72px;height:72px;border-radius:12px}
@@ -95,11 +111,6 @@
     .skills{display:flex;flex-wrap:wrap;gap:10px}
     .skill{background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));padding:8px 12px;border-radius:8px;font-size:13px;color:var(--muted);border:1px solid rgba(255,255,255,0.02)}
 
-    /* sidebar */
-    aside .section{margin-bottom:18px}
-    .small{font-size:13px;color:var(--muted)}
-    .link-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-
     /* blog list */
     .blog-list{display:flex;flex-direction:column;gap:12px}
     .blog{padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid rgba(255,255,255,0.02)}
@@ -112,7 +123,7 @@
     .row{display:flex;gap:10px;align-items:center}
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-    /* responsive tweaks */
+    /* responsive tweaks and mobile behaviour */
     @media (max-width:740px){
       header{padding:6px 4px}
       .avatar{width:64px;height:64px}
@@ -133,11 +144,9 @@
       .tag{padding:6px 8px;font-size:12px}
       .skills{gap:8px}
       .layout{gap:14px}
-      /* position mobile-nav full width under header on very small screens */
       .mobile-nav{right:14px;left:14px;top:calc(100% + 10px)}
     }
 
-    /* improve touch targets on very small screens */
     @media (max-width:420px){
       .hamburger{width:44px;height:44px}
       nav a.btn{padding:10px 12px}
@@ -163,150 +172,166 @@
 
       <!-- Desktop nav (hidden on small screens) -->
       <nav id="main-nav" class="row" aria-label="Main navigation">
+        <a class="btn" href="#about">About</a>
         <a class="btn" href="#projects">Projects</a>
-        <a class="btn" href="#blog">Blog</a>
-        <a class="btn" href="#contact">Contact</a>
+        <a class="btn" href="#skills-card">Skills</a>
+        <a class="btn" href="#contact-card">Contact</a>
+      </nav>
+
+      <!-- Hamburger shown on small screens -->
+      <button class="hamburger" id="hamburger" aria-controls="mobile-nav" aria-expanded="false" aria-label="Open navigation">
+        <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="20" height="2" rx="1" fill="currentColor"></rect>
+          <rect y="6" width="20" height="2" rx="1" fill="currentColor"></rect>
+          <rect y="12" width="20" height="2" rx="1" fill="currentColor"></rect>
+        </svg>
+      </button>
+
+      <!-- Mobile dropdown nav -->
+      <nav id="mobile-nav" class="mobile-nav" role="menu" aria-hidden="true">
+        <a href="#about" role="menuitem">About</a>
+        <a href="#projects" role="menuitem">Projects</a>
+        <a href="#skills-card" role="menuitem">Skills</a>
+        <a href="#highlights-card" role="menuitem">Highlights</a>
+        <a href="#blog-card" role="menuitem">Blog</a>
+        <a href="#contact-card" role="menuitem">Contact</a>
       </nav>
     </header>
 
-    <main class="layout">
-      <section>
-        <div class="card" id="about">
-          <h2>About</h2>
-          <p class="small">I'm an Android developer with 10+ years of experience building consumer apps at scale. I specialize in Jetpack Compose, clean architecture, performance optimization and mentoring engineering teams. I enjoy building features that are robust, maintainable, and delightful.</p>
-          <div style="margin-top:12px" class="grid-2">
+    <!-- layout: children are direct cards in mobile-friendly order -->
+    <main class="layout" role="main">
+      <!-- 1. ABOUT -->
+      <div id="about" class="card">
+        <h2>About</h2>
+        <p class="small">I'm an Android developer with 10+ years of experience building consumer apps at scale. I specialize in Jetpack Compose, clean architecture, performance optimization and mentoring engineering teams. I enjoy building features that are robust, maintainable, and delightful.</p>
+        <div style="margin-top:12px" class="grid-2">
+          <div>
+            <h4 style="margin:6px 0">Current focus</h4>
+            <p class="small">Building high-performance, modular Android apps with <strong>Jetpack Compose</strong> and <strong>Clean Architecture</strong>.<br>Exploring <strong>on-device ML</strong> and optimizing startup and runtime performance.</p>
+          </div>
+
+          <div>
+            <h4 style="margin:6px 0">Looking for</h4>
+            <p class="small">Senior/Lead Android roles where I can architect, design, and develop scalable mobile platforms while mentoring teams.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. PROJECTS -->
+      <div id="projects" class="card" style="margin-top:0">
+        <h2>Featured Projects</h2>
+        <div class="projects" style="margin-top:12px">
+
+          <article class="project">
+            <div class="thumb">JioAICloud</div>
             <div>
-              <h4 style="margin:6px 0">Current focus</h4>
-              <p class="small">Building high-performance, modular Android apps with <strong>Jetpack Compose</strong> and <strong>Clean Architecture</strong>.<br>Exploring <strong>on-device ML</strong> and optimizing startup and runtime performance.</p>
+              <h3>JioAICloud • 10M+ downloads</h3>
+              <div class="meta">Lead Android Developer • Compose, Kotlin, Coroutine, Hilt, Paging 3<br>2023–Present</div>
+              <p class="small" style="margin-top:8px">Built the <strong>Events module</strong> from scratch using <strong>Clean Architecture</strong> and <strong>Jetpack Compose</strong>. Enabled real-time photo capture, upload, and sharing with <strong>QR-based event access</strong>, ensuring a seamless user experience aligned with the <strong>Jio Design System</strong>. Mentored a team of 4 developers.</p>
+              <div class="tags">
+                <span class="tag">Clean Architecture</span>
+                <span class="tag">Jetpack Compose</span>
+                <span class="tag">Reactive Programming</span>
+              </div>
             </div>
+          </article>
 
+          <article class="project">
+            <div class="thumb">JioPhotos</div>
             <div>
-              <h4 style="margin:6px 0">Looking for</h4>
-              <p class="small">Senior/Lead Android roles where I can architect, design, and develop scalable mobile platforms while mentoring teams.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" id="projects" style="margin-top:18px">
-          <h2>Projects</h2>
-          <div class="projects">
-
-            <article class="project">
-              <div class="thumb">JioAICloud</div>
-              <div>
-                <h3>JioAICloud • 10M+ downloads</h3>
-                <div class="meta">Lead Android Developer • Compose, Kotlin, Coroutine, Hilt, Paging 3<br>2023–Present</div>
-                <p class="small" style="margin-top:8px">Built the <strong>Events module</strong> from scratch using <strong>Clean Architecture</strong> and <strong>Jetpack Compose</strong>. Enabled real-time photo capture, upload, and sharing with <strong>QR-based event access</strong>, ensuring a seamless user experience aligned with the <strong>Jio Design System</strong>. Mentored a team of 4 developers.</p>
-                <div class="tags">
-                  <span class="tag">Clean Architecture</span>
-                  <span class="tag">Jetpack Compose</span>
-                  <span class="tag">Reactive Programming</span>
-                </div>
+              <h3>JioPhotos STB • 7M+ downloads</h3>
+              <div class="meta">Senior Android Developer • DLNA, Kotlin, Android TV<br>2020–Present</div>
+              <p class="small" style="margin-top:8px">Built <strong>JioPhotos</strong>, a DLNA-based Android TV app for seamless media streaming and playback across devices. Aggregated content from <strong>HDD, JioCloud, Google Photos, Facebook,</strong> and <strong>Instagram</strong>, and added live streaming support to <strong>Facebook</strong> and <strong>YouTube</strong> via USB cameras.</p>
+              <div class="tags">
+                <span class="tag">DLNA</span>
+                <span class="tag">Android TV</span>
+                <span class="tag">Media Player</span>
+                <span class="tag">Kotlin</span>
               </div>
-            </article>
+            </div>
+          </article>
 
-            <article class="project">
-              <div class="thumb">JioPhotos</div>
-              <div>
-                <h3>JioPhotos STB • 7M+ downloads</h3>
-                <div class="meta">Senior Android Developer • DLNA, Kotlin, Android TV<br>2020-Present</div>
-                <p class="small" style="margin-top:8px">Built <strong>JioPhotos</strong>, a DLNA-based Android TV app for seamless media streaming and playback across devices. Aggregated content from <strong>HDD, JioCloud, Google Photos, Facebook,</strong> and <strong>Instagram</strong>, and added live streaming support to <strong>Facebook</strong> and <strong>YouTube</strong> via USB cameras.</p>
-                <div class="tags">
-                    <span class="tag">DLNA</span>
-                    <span class="tag">Android TV</span>
-                    <span class="tag">Media Player</span>
-                    <span class="tag">Kotlin</span>
-                </div>
+          <article class="project">
+            <div class="thumb">CMS</div>
+            <div>
+              <h3>Content Management System • B2B App</h3>
+              <div class="meta">Senior Android Developer • Java, Video Streaming, ExoPlayer<br>2018–2020</div>
+              <p class="small" style="margin-top:8px">Designed and developed a B2B Android app for efficient digital content management. Added <strong>video streaming</strong> support via <strong>RTP, RTSP</strong> and <strong>HTTP</strong> protocols. Implemented authentication, role-based access, real-time sync, and optimized storage for scalability.</p>
+              <div class="tags">
+                <span class="tag">Java</span>
+                <span class="tag">Video Streaming</span>
+                <span class="tag">Third Party Integration</span>
               </div>
-            </article>
+            </div>
+          </article>
 
-            <article class="project">
-              <div class="thumb">CMS</div>
-              <div>
-                <h3>Content Management System • B2B App</h3>
-                <div class="meta">Senior Android Developer • Java, Video Streaming, ExoPlayer<br>2018–2020</div>
-                <p class="small" style="margin-top:8px">Designed and developed a B2B Android app for efficient digital content management. Added <strong>video streaming</strong> support via <strong>RTP, RTSP</strong> and <strong>HTTP</strong> protocols. Implemented authentication, role-based access, real-time sync, and optimized storage for scalability.</p>
-                <div class="tags">
-                  <span class="tag">Java</span>
-                  <span class="tag">Video Streaming</span>
-                  <span class="tag">Third Party Integration</span>
-                </div>
-              </div>
-            </article>
+        </div>
+      </div>
 
+      <!-- 3. SKILLS & TECH STACK (moved to DOM after Projects so it appears 3rd on mobile; placed into sidebar on desktop by CSS) -->
+      <div id="skills-card" class="card" style="margin-top:0">
+        <h3>Skills & Tech Stack</h3>
+        <div style="margin-top:10px" class="skills">
+          <span class="skill">Kotlin</span>
+          <span class="skill">Java</span>
+          <span class="skill">Jetpack Compose</span>
+          <span class="skill">Dependency Injection</span>
+          <span class="skill">Paging 3</span>
+          <span class="skill">Coroutines & Flow</span>
+          <span class="skill">Security</span>
+          <span class="skill">App Optimization</span>
+          <span class="skill">Profiling & Debugging</span>
+          <span class="skill">Agile Methodology</span>
+          <span class="skill">Unit Testing</span>
+        </div>
+      </div>
+
+      <!-- 4. HIGHLIGHTS -->
+      <div id="highlights-card" class="card" style="margin-top:0">
+        <h4>Highlights</h4>
+        <ul class="small" style="margin-top:8px;padding-left:18px">
+          <li>Modernized legacy modules using Jetpack Compose and Kotlin Flow</li>
+          <li>Improved technical documentation and internal knowledge base</li>
+          <li>Optimized app startup time by 40%</li>
+        </ul>
+      </div>
+
+      <!-- 5. BLOGS -->
+      <div id="blog-card" class="card" style="margin-top:0">
+        <h2>Selected Write-ups</h2>
+        <div class="blog-list" style="margin-top:12px">
+          <div class="blog">
+            <a href="https://medium.com/@mahesh31.ambekar/avoiding-memory-leaks-in-android-jetpack-compose-️-4b5e9ba1b861" target="_blank" style="text-decoration:none; color:inherit;">
+              <strong>Avoiding Memory Leaks in Android Jetpack Compose</strong>
+              <p class="small" style="margin-top:6px">Key practices and lifecycle tips to prevent memory leaks and ensure stable, efficient Compose apps.</p>
+            </a>
+          </div>
+
+          <div class="blog">
+            <a href="https://medium.com/@mahesh31.ambekar/from-phones-to-foldables-building-responsive-android-apps-a13992f9e2b7" target="_blank" style="text-decoration:none; color:inherit;">
+              <strong>From Phones to Foldables: Building Responsive Android Apps</strong>
+              <p class="small" style="margin-top:6px">A practical guide to resource qualifiers, adaptive layouts, and best practices for modern Android UIs.</p>
+            </a>
+          </div>
+
+          <div class="blog">
+            <a href="https://medium.com/@mahesh31.ambekar/master-kotlin-coroutines-scopes-lifecycles-structured-concurrency-explained-f1a94719aa5e" target="_blank" style="text-decoration:none; color:inherit;">
+              <strong>Kotlin Coroutines: Scopes, Lifecycles & Structured Concurrency Explained</strong>
+              <p class="small" style="margin-top:6px">A practical guide to managing coroutine lifecycles, scopes, and structured concurrency in modern Android apps.</p>
+            </a>
           </div>
         </div>
+        <div style="margin-top:12px"><a class="cta" href="https://medium.com/@mahesh31.ambekar" target="_blank">Read all on Medium</a></div>
+      </div>
 
-        <div class="card" id="blog" style="margin-top:18px">
-          <h2>Blogs</h2>
-          <div class="blog-list">
-            <div class="blog">
-              <a href="https://medium.com/@mahesh31.ambekar/avoiding-memory-leaks-in-android-jetpack-compose-️-4b5e9ba1b861" 
-                 target="_blank" 
-                 style="text-decoration:none; color:inherit;">
-                <strong>Avoiding Memory Leaks in Android Jetpack Compose</strong>
-                <p class="small" style="margin-top:6px">Key practices and lifecycle tips to prevent memory leaks and ensure stable, efficient Compose apps.</p>
-              </a>
-            </div>
+      <!-- 6. CONTACT -->
+      <div id="contact-card" class="card" style="margin-top:0">
+        <h4>Contact</h4>
+        <div class="small" style="margin-top:6px">Email: <a href="mailto:mahesh31.ambekar@gmail.com" target="_blank">mahesh31.ambekar@gmail.com</a></div>
+        <div class="small" style="margin-top:6px">LinkedIn: <a href="https://www.linkedin.com/in/mahesh-ambekar-622201b9/" target="_blank">linkedin.com/in/mahesh-ambekar</a></div>
+        <div class="small" style="margin-top:6px">GitHub: <a href="https://github.com/mahesh311" target="_blank">github.com/mahesh-ambekar</a></div>
+      </div>
 
-            <div class="blog">
-              <a href="https://medium.com/@mahesh31.ambekar/from-phones-to-foldables-building-responsive-android-apps-a13992f9e2b7" 
-                 target="_blank" 
-                 style="text-decoration:none; color:inherit;">
-                <strong>From Phones to Foldables: Building Responsive Android Apps</strong>
-                <p class="small" style="margin-top:6px">A practical guide to resource qualifiers, adaptive layouts, and best practices for modern Android UIs.</p>
-              </a>
-            </div>
-
-            <div class="blog">
-              <a href="https://medium.com/@mahesh31.ambekar/master-kotlin-coroutines-scopes-lifecycles-structured-concurrency-explained-f1a94719aa5e" 
-                 target="_blank" 
-                 style="text-decoration:none; color:inherit;">
-                <strong>Kotlin Coroutines: Scopes, Lifecycles & Structured Concurrency Explained</strong>
-                <p class="small" style="margin-top:6px">A practical guide to managing coroutine lifecycles, scopes, and structured concurrency in modern Android apps.</p>
-              </a>
-            </div>
-          </div>
-          <div style="margin-top:12px"><a class="cta" href="https://medium.com/@mahesh31.ambekar" target="_blank">Read all on Medium</a></div>
-        </div>
-
-      </section>
-
-      <aside>
-        <div class="card section">
-          <h3>Skills & Tech Stack</h3>
-          <div style="margin-top:10px" class="skills">
-            <span class="skill">Kotlin</span>
-            <span class="skill">Java</span>
-            <span class="skill">Jetpack Compose</span>
-            <span class="skill">Dependency Injection</span>
-            <span class="skill">Paging 3</span>
-            <span class="skill">Coroutines & Flow</span>
-            <span class="skill">Security</span>
-            <span class="skill">App Optimization</span>
-            <span class="skill">Profiling & Debugging</span>
-            <span class="skill">Agile Methodology</span>
-            <span class="skill">Unit Testing</span>
-          </div>
-        </div>
-
-        <div class="card section" id="contact">
-          <h4>Contact</h4>
-          <div class="small" style="margin-top:6px">Email: <a href="mailto:mahesh31.ambekar@gmail.com" target="_blank">mahesh31.ambekar@gmail.com</a></div>
-          <div class="small">LinkedIn: <a href="https://www.linkedin.com/in/mahesh-ambekar-622201b9/" target="_blank">linkedin.com/in/mahesh-ambekar</a></div>
-          <div class="small">GitHub: <a href="https://github.com/mahesh311" target="_blank">github.com/mahesh-ambekar</a></div>
-        </div>
-
-        <div class="card section">
-          <h4>Highlights</h4>
-          <ul class="small" style="margin-top:8px;padding-left:18px">
-            <li>Modernized legacy modules using Jetpack Compose and Kotlin Flow</li>
-            <li>Improved technical documentation and internal knowledge base</li>
-            <li>Optimized app startup time by 40%</li>
-          </ul>
-        </div>
-
-      </aside>
     </main>
 
     <footer>
